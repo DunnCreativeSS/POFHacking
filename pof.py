@@ -64,5 +64,5 @@ while True:
         for item in usersDone:
             f.write("%s\n" % item)
 
-    POFobject.broadcastMessage(tomsg, "Hey! This is going to sound terrrrribly awkward but I hacked POF in a very special way that allows me to rank different profiles among the online users to see whose description matches an analysis I'd created that might indicate we'd have a swell chance at a good conversation - so if this isn't terribly scary as well as terribly awkward, do hazard a response back and we'll see if I'm right? I'm legit though here's the code: https://github.com/DunnCreativeSS/POFHacking" )
+    POFobject.broadcastMessage(tomsg, "Hey! This is going to sound terrrrribly awkward but I hacked POF in a very special way that allows me to rank different profiles among the online users to see whose description matches an analysis I'd created that might indicate we'd have a swell chance at a good conversation - so if this isn't terribly scary as well as terribly awkward, do hazard a response back and we'll see if I'm right? I'm legit though here's the code: https://github.com/DunnCreativeSS/POFHacking - in case my account gets auto-shutdown after much of this, I'll drop my American cell # here: 17162268165" )
     time.sleep(60)
