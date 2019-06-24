@@ -29,7 +29,7 @@ url = r'https://www.pof.com/register.aspx?id=1'
 #prox.add_to_capabilities(capabilities)
 
 
-client = PACSession(pac)
+client = PACSession(pac=pac)
 
 #proxies = { 'http', new }
 print(client.proxies)
@@ -654,7 +654,9 @@ class Session:
         try:
             page_response = client.get(loginURLS["formPage"])
 
-        except:
+        except Exception as e:
+            print(e)
+            time.sleep(20)
             #print('len all proxies')
             #print (len(ALL_PROXIES))
             if len(ALL_PROXIES) > 0:
