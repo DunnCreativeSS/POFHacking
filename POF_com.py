@@ -645,7 +645,7 @@ class Session:
 
         # But wait -- there's more!
         # Throwing in rudimentary proxy support:
-        if self.config.proxy_enabled:
+        #if self.config.proxy_enabled:
             
             #proxies = { 'http', new }
             # client.proxies = ['http://'+new]
