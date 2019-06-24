@@ -1,13 +1,50 @@
 import requests
-
+from pypac import PACSession, get_pac
+pac = get_pac(url='https://whalesapp.fun/foxy.PAC')
 from lxml import html
 import re
 import time
 import configparser
 import sqlite3
 usersDescriptions = []
-client = requests.Session()
+from selenium import webdriver
+import time
+import Config
+import zipcodes
+from random import randint
+from faker import Faker
+fake = Faker()
 
+from selenium.webdriver.firefox.options import DesiredCapabilities
+from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.common.exceptions import NoSuchElementException
+
+from selenium.webdriver.common.keys import Keys
+logins = []
+# Import Config for your username and password
+user = Config.DATACOUP_USERNAME
+psw = Config.DATACOUP_PASSWORD
+url = r'https://www.pof.com/register.aspx?id=1'
+
+profile = webdriver.FirefoxProfile()      
+profile.set_preference("network.proxy.type", 2);
+profile.set_preference("network.proxy.autoconfig_url", "https://whalesapp.fun/foxy.PAC");
+
+pd = webdriver.Firefox(firefox_profile=profile)
+
+#co.add_argument('--ignore-certificate-errors-spki-list')
+#co.add_argument('--ignore-ssl-errors')
+
+
+#capabilities = webdriver.DesiredCapabilities.FIREFOX
+#prox.add_to_capabilities(capabilities)
+
+
+client = PACSession(pac)
+
+#proxies = { 'http', new }
+print(client.proxies)
+# client.proxies = ['http://'+new]
 
     # But wait-- there's more!
     # Use the user-configured useragent string
@@ -19,6 +56,8 @@ client.headers.update(
         'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36"
     }
 )
+from random import randint
+
 class Session:
     
     # Exception type for various session errors.
@@ -32,6 +71,7 @@ class Session:
         @staticmethod
         def scrape( datapoint, text ):
             cases = {
+                "register-form": Session.Parser.registerform,
                 "description": Session.Parser.description,
                 "sid": Session.Parser.SID_login,
                 "active_session": Session.Parser.is_logged_in,
@@ -45,6 +85,12 @@ class Session:
                 "uid_from_url": Session.Parser.uid_from_url,
             }
             return cases[datapoint](text)
+        @staticmethod
+        def registerform(text):
+            loginFormTree = html.fromstring( text )
+            action_xpath = loginFormTree.xpath( '//*[@id="register-form"]/form/@action' )
+            action = action_xpath[0].value
+            return action
         @staticmethod
         def description(text):
             loginFormTree = html.fromstring( text )
@@ -66,10 +112,70 @@ class Session:
             if len(sid_xpath) > 0:
                 sid = sid_xpath[0].value
             else:
-                raise Session.POFSessionError("Failed to get session ID from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             if sid is None:
-                raise Session.POFSessionError("Failed to get session ID from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             return sid
 
@@ -81,10 +187,70 @@ class Session:
             if len(csrf_token_xpath) > 0:
                 csrf_token = csrf_token_xpath[0].value
             else:
-                raise Session.POFSessionError("Failed to get session CSRF TOKEN from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             if csrf_token is None:
-                raise Session.POFSessionError("Failed to get CSRF TOKEN from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             return csrf_token
 
@@ -96,11 +262,69 @@ class Session:
             if len(installId_xpath) > 0:
                 installId = installId_xpath[0].value
             else:
-                raise Session.POFSessionError("Failed to get installId from login form.")
-
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
             if installId is None:
-                raise Session.POFSessionError("Failed to get installId from login form.")
-
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
             return installId
 
         @staticmethod
@@ -111,10 +335,69 @@ class Session:
             if len(deviceId) > 0:
                 deviceId = deviceId[0].value
             else:
-                raise Session.POFSessionError("Failed to get deviceId from login form.")
-
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
             if deviceId is None:
-                raise Session.POFSessionError("Failed to get deviceId from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             return deviceId
 
@@ -126,10 +409,70 @@ class Session:
             if len(deviceLocale) > 0:
                 deviceLocale = deviceLocale[0].value
             else:
-                raise Session.POFSessionError("Failed to get deviceLocale from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             if deviceLocale is None:
-                raise Session.POFSessionError("Failed to get deviceLocale from login form.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             return deviceLocale
 
@@ -139,7 +482,7 @@ class Session:
             sign_in_link_xpath = edit_profile_page.xpath( '/html/body/div[1]/div[1]/div/div/span[3]/a' )
 
             ret = False
-
+            print(sign_in_link_xpath[0].text)
             if len(sign_in_link_xpath) > 0:
                 if sign_in_link_xpath[0].text == "Sign In":
                     ret = False
@@ -161,7 +504,12 @@ class Session:
                 hiddenElements[entry.attrib['name']] = entry.attrib['value']
 
             return hiddenElements
+        
 
+         #   try:
+         #       client.post(register1, data=loginData, allow_redirects=True))
+         #   except requests.exceptions.ConnectionError:
+         #       raise Session.POFSessionError("Could not logout.")
         @staticmethod
         def send_message_failed(m):
             return not re.search("messagesent=1", m)
@@ -198,7 +546,37 @@ class Session:
                 if len(href) is not 0:
                     href = href[0]
                 else:
-                    raise Session.POFSessionError("Failed to parse the results page. Cannot continue.")
+                    #print('len all proxies')
+                    #print (len(ALL_PROXIES))
+                    if len(ALL_PROXIES) > 0:
+                        aaa=1#new = ALL_PROXIES.pop()
+                    else:
+                        aaa=1#ALL_PROXIES = get_proxies()
+                        aaa=1#new = ALL_PROXIES.pop()
+                    # reassign driver if fail to switch proxy
+                    #pd = proxy_driver(ALL_PROXIES)
+                    #proxies = { 'http', new }
+                    # client.proxies = ['http://'+new]
+                    #print("--- Switched proxy to: %s" % new)
+                    time.sleep(1)
+                    with open('logins.txt') as f:
+                        content = f.readlines()
+                    # you may also want to remove whitespace characters like `\n` at the end of each line
+                    content = [x.strip() for x in content] 
+                    count = 0
+                    done = False
+                    for line in content:
+                        if count == int(self.config.user) + 1:
+                            done = True
+                            self.config.user = int(self.config.user) + 1
+                            self.config.username = line.split(',')[0]
+                            self.config.password = line.split(',')[2]
+                        count = count + 1
+                    if done == False:
+                        self.config.user = 0
+                        self.config.username = "BenjaminDuran223"
+                        self.config.password = "LightBlue223"
+                    self.login()
                 
                 online_status_string = profile.xpath('div[@class="description"]/div[@class="about"]/font/text()')
 
@@ -209,10 +587,40 @@ class Session:
                 searchURL = "https://www.pof.com/" + href
                 try:
                     profile_page = client.get( searchURL )
-                except requests.exceptions.ConnectionError:
-                    raise Session.POFSessionError("Could not get results.  Connectivity issue?")
+                except:
+                    #print('len all proxies')
+                    #print (len(ALL_PROXIES))
+                    if len(ALL_PROXIES) > 0:
+                        aaa=1#new = ALL_PROXIES.pop()
+                    else:
+                        aaa=1#ALL_PROXIES = get_proxies()
+                        aaa=1#new = ALL_PROXIES.pop()
+                    # reassign driver if fail to switch proxy
+                    #pd = proxy_driver(ALL_PROXIES)
+                    #proxies = { 'http', new }
+                    # client.proxies = ['http://'+new]
+                    #print("--- Switched proxy to: %s" % new)
+                    time.sleep(1)
+                    with open('logins.txt') as f:
+                        content = f.readlines()
+                    # you may also want to remove whitespace characters like `\n` at the end of each line
+                    content = [x.strip() for x in content] 
+                    count = 0
+                    done = False
+                    for line in content:
+                        if count == int(self.config.user) + 1:
+                            done = True
+                            self.config.user = int(self.config.user) + 1
+                            self.config.username = line.split(',')[0]
+                            self.config.password = line.split(',')[2]
+                        count = count + 1
+                    if done == False:
+                        self.config.user = 0
+                        self.config.username = "BenjaminDuran223"
+                        self.config.password = "LightBlue223"
+                    self.login()
                 if profile_page not in usersDescriptions:
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     description = Session.Parser.scrape("description", profile_page.content)
                     thisUser.description = description
                 if online_status_string == "Online Now":
@@ -238,14 +646,16 @@ class Session:
         # But wait -- there's more!
         # Throwing in rudimentary proxy support:
         if self.config.proxy_enabled:
-            proxies = { 'http', self.config.proxy }
-            client.proxies.update(proxies)
+            
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
 
         self.contactTracker = Session.ContactRecorder(self.config)
         self.contactTracker.ensureMessageHistoryTable()
 
     # Log in to POF.com as if you were a browser
     def login(self):
+        time.sleep(10)
         # Can also get this from the response Set-Cookie header as
         loginURLS = {
             "formPage": "https://www.pof.com/inbox.aspx",
@@ -255,9 +665,39 @@ class Session:
         try:
             page_response = client.get(loginURLS["formPage"])
 
-        except requests.exceptions.ConnectionError as e:
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
             print(e)
-            raise Session.POFSessionError("Could not reach %s" % (loginURLS["formPage"]))
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
 
         # get form values
         sid = Session.Parser.scrape("sid", page_response.content)
@@ -267,7 +707,8 @@ class Session:
         deviceLocale = Session.Parser.scrape("deviceLocale", page_response.content)
         print('sid etc')
         print(sid)
-        
+        print(self.config.username)
+        print(self.config.password)
         # This site actually checks for these unset variables :/
         loginData = {
             'csrf_token': csrf_token,
@@ -284,14 +725,75 @@ class Session:
 
         try:
             login = client.post(loginURLS["processPage"], data=loginData, allow_redirects=True)
-        except requests.exceptions.ConnectionError:
-            raise Session.POFSessionError("Failed to complete login transaction at the HTTP level.  Can not continue.")
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
 
 
         # throw exception if no active session created
         if not self.has_active_session():
-            raise Session.POFSessionError("Login failed.  Please check your password.")
-
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            print(self.config.username)
+            print(self.config.password)
+            self.login()
         print("Successfully logged in as user '{0}'.".format(self.config.username))
 
     def sendMessage(self, user, body):
@@ -301,8 +803,38 @@ class Session:
 
         try:
             profileForm = client.get(profileURL)
-        except requests.exceptions.ConnectionError:
-            raise Session.POFSessionError("Could not retrieve user profile.  Something's really wrong.")
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
 
         fields = Session.Parser.scrape("msgFormHiddenElements", profileForm.content)
 
@@ -328,13 +860,142 @@ class Session:
         )
         try:
             submit_response = client.post(messageGateway, data=fields)
-        except requests.exceptions.ConnectionError:
-            raise Session.POFSessionError("Connection failure while attempting to send message.  Session dropped?")
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
         
         if Session.Parser.send_message_failed(submit_response.url):
             print("Failed to send a message to user " + user.uid + ".  Blocked?")
+            logoutGateway = "https://www.pof.com/abandon.aspx"
+
+            try:
+                client.get(logoutGateway)
+            except:
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
+            
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+                time.sleep(60 * 4 * 60)
+            self.login()
             if not self.has_active_session():
-                raise Session.POFSessionError("Your session has been dropped.")
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
         else:
             print("Successfully sent message to user " + user.uid)
 
@@ -342,7 +1003,37 @@ class Session:
         searchURL = "https://www.pof.com/advancedsearch.aspx"
 
         if not self.has_active_session():
-            raise Session.POFSessionError("Your session has been dropped.  Cannot continue.")
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
 
         total_users = list()
 
@@ -386,8 +1077,38 @@ class Session:
             try:
                 results_page = client.get( completeURL )
 
-            except requests.exceptions.ConnectionError:
-                raise Session.POFSessionError("Could not get results.  Connectivity issue?")
+            except:
+                #print('len all proxies')
+                #print (len(ALL_PROXIES))
+                if len(ALL_PROXIES) > 0:
+                    aaa=1#new = ALL_PROXIES.pop()
+                else:
+                    aaa=1#ALL_PROXIES = get_proxies()
+                    aaa=1#new = ALL_PROXIES.pop()
+                # reassign driver if fail to switch proxy
+                #pd = proxy_driver(ALL_PROXIES)
+                #proxies = { 'http', new }
+                # client.proxies = ['http://'+new]
+                #print("--- Switched proxy to: %s" % new)
+                time.sleep(1)
+                with open('logins.txt') as f:
+                    content = f.readlines()
+                # you may also want to remove whitespace characters like `\n` at the end of each line
+                content = [x.strip() for x in content] 
+                count = 0
+                done = False
+                for line in content:
+                    if count == int(self.config.user) + 1:
+                        done = True
+                        self.config.user = int(self.config.user) + 1
+                        self.config.username = line.split(',')[0]
+                        self.config.password = line.split(',')[2]
+                    count = count + 1
+                if done == False:
+                    self.config.user = 0
+                    self.config.username = "BenjaminDuran223"
+                    self.config.password = "LightBlue223"
+                self.login()
 
             this_page_users = Session.Parser.scrape("users", results_page.content)
 
@@ -422,12 +1143,25 @@ class Session:
 
     def has_active_session(self):
         # checks if session is active, somehow
-        sessionCheckURL = {
+        sessionCheckURL = { 
             "editPage": "https://www.pof.com/editprofile.aspx",
         }
-
-        check_response = client.get( sessionCheckURL["editPage"] )
-
+        try:
+            check_response = client.get( sessionCheckURL["editPage"] )
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
         return Session.Parser.scrape("active_session", check_response.content)
 
     def getPhotos(self, user):
@@ -435,8 +1169,38 @@ class Session:
 
         try:
             profile = client.get(profileURL)
-        except requests.exceptions.ConnectionError:
-            raise Session.POFSessionError("Could not retrieve user profile.  Something's really wrong.")
+        except:
+            #print('len all proxies')
+            #print (len(ALL_PROXIES))
+            if len(ALL_PROXIES) > 0:
+                aaa=1#new = ALL_PROXIES.pop()
+            else:
+                aaa=1#ALL_PROXIES = get_proxies()
+                aaa=1#new = ALL_PROXIES.pop()
+            # reassign driver if fail to switch proxy
+            #pd = proxy_driver(ALL_PROXIES)
+            #proxies = { 'http', new }
+            # client.proxies = ['http://'+new]
+            #print("--- Switched proxy to: %s" % new)
+            time.sleep(1)
+            with open('logins.txt') as f:
+                content = f.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content] 
+            count = 0
+            done = False
+            for line in content:
+                if count == int(self.config.user) + 1:
+                    done = True
+                    self.config.user = int(self.config.user) + 1
+                    self.config.username = line.split(',')[0]
+                    self.config.password = line.split(',')[2]
+                count = count + 1
+            if done == False:
+                self.config.user = 0
+                self.config.username = "BenjaminDuran223"
+                self.config.password = "LightBlue223"
+            self.login()
 
         photos = Session.Parser.scrape("profile_photos", profile.content)
 
@@ -465,6 +1229,7 @@ class Session:
             self.useragent = settings.get("general-client", "user_agent")
 
             self.username = settings.get("pof-session", "username")
+            self.user = settings.get("pof-session", "user")
             self.password = settings.get("pof-session", "password")
 
             self.gender = settings.get("pof-search", "gender")
