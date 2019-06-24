@@ -14,7 +14,7 @@ import zipcodes
 from random import randint
 from faker import Faker
 fake = Faker()
-
+ALL_PROXIES = []
 from selenium.webdriver.firefox.options import DesiredCapabilities
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.common.exceptions import NoSuchElementException
