@@ -7,7 +7,6 @@ import time
 import configparser
 import sqlite3
 usersDescriptions = []
-from selenium import webdriver
 import time
 import Config
 import zipcodes
@@ -15,22 +14,12 @@ from random import randint
 from faker import Faker
 fake = Faker()
 ALL_PROXIES = []
-from selenium.webdriver.firefox.options import DesiredCapabilities
-from selenium.webdriver.common.proxy import Proxy, ProxyType
-from selenium.common.exceptions import NoSuchElementException
 
-from selenium.webdriver.common.keys import Keys
 logins = []
 # Import Config for your username and password
 user = Config.DATACOUP_USERNAME
 psw = Config.DATACOUP_PASSWORD
 url = r'https://www.pof.com/register.aspx?id=1'
-
-profile = webdriver.FirefoxProfile()      
-profile.set_preference("network.proxy.type", 2);
-profile.set_preference("network.proxy.autoconfig_url", "https://whalesapp.fun/foxy.PAC");
-
-pd = webdriver.Firefox(firefox_profile=profile)
 
 #co.add_argument('--ignore-certificate-errors-spki-list')
 #co.add_argument('--ignore-ssl-errors')
@@ -679,7 +668,7 @@ class Session:
             # client.proxies = ['http://'+new]
             #print("--- Switched proxy to: %s" % new)
             time.sleep(1)
-            print(e)
+            #print(e)
             with open('logins.txt') as f:
                 content = f.readlines()
             # you may also want to remove whitespace characters like `\n` at the end of each line
