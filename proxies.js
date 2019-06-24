@@ -98,7 +98,7 @@ async function getGoods(options, proxy, checkC){
 				
 				let str = '["'
 				for (var g in goods) {
-					str = str + 'SOCKS5 ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') + '; SOCKS4 ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') + '; SOCKS ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') +'","'
+					str = str + 'SOCKS ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') +'; SOCKS5 ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') + '; SOCKS4 ' + goods[g].split(':')[1].replace('//','') + ':' + goods[g].split(':')[2].replace('//','') + '","'
 				}
 					str = str.substring(0, str.length - 2) + ']'
 					//console.log(str)
